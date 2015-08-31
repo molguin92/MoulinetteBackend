@@ -2,6 +2,7 @@ from moulinette import db
 from datetime import datetime
 
 class Problem ( db.Model ):
+    __tablename__ = 'problem'
     id = db.Column ( db.Integer, primary_key = True )
     name = db.Column ( db.String, unique = True, index = True )
     description = db.Column ( db.Text )
