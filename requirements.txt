@@ -1,7 +1,0 @@
-Flask
-SQLAlchemy
-Flask-SQLAlchemy
-Flask-RESTful
-Flask-Script
-passlib
-Flask-HTTPAuth
