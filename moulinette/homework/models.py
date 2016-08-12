@@ -1,9 +1,8 @@
-from flask_sqlalchemy import Model
 from moulinette import db
 from datetime import datetime
 
 
-class Homework(Model):
+class Homework(db.Model):
     __tablename__ = 'homework'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True, nullable=False)
@@ -34,7 +33,7 @@ class Homework(Model):
         self.active = False
 
 
-class Item(Model):
+class Item(db.Model):
     __tablename__ = 'item'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -60,7 +59,7 @@ class Item(Model):
         return t
 
 
-class Test(Model):
+class Test(db.Model):
     __tablename__ = 'test'
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, default=datetime.now)

@@ -4,12 +4,11 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
 api = Api(app)
-app.config[
-    'SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 
-from moulinette.homework.models import *
+from moulinette.homework import models
 import moulinette.views
 
 if __name__ == '__main__':

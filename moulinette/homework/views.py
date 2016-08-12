@@ -18,7 +18,7 @@ class HomeworkResource(Resource):
                 'result': result}
 
 
-class ItemResource(Model):
+class ItemResource(Resource):
     def __init__(self):
         self.get_parser = reqparse.RequestParser()
         self.get_parser.add_argument('homework_id',
@@ -41,7 +41,7 @@ class ItemResource(Model):
                 'result': result}
 
 
-class TestResource(Model):
+class TestResource(Resource):
     def __init__(self):
         self.get_parser = reqparse.RequestParser()
         self.get_parser.add_argument('item_id',
