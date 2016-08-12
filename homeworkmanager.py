@@ -8,9 +8,10 @@ def startup():
         'Please select an action:\n'
         '1. Create a homework assignment.\n'
         '2. Deactivate a homework assignment.\n'
-        '3. Delete a homework assignment.\n'
-        '4. List active homework assignments.\n'
-        '5. List ALL homework assignments.\n'
+        '3. Reactivate a homework assignment.\n'
+        '4. Delete a homework assignment.\n'
+        '5. List active homework assignments.\n'
+        '6. List ALL homework assignments.\n'
         '0. Exit.\n>> ', default=0, type=int, show_default=False)
 
     click.echo('\n')
@@ -19,11 +20,11 @@ def startup():
         create_hw()
     elif value == 2:
         deactivate_hw()
-    elif value == 3:
-        print('delete')
     elif value == 4:
-        list_active()
+        delete_hw()
     elif value == 5:
+        list_active()
+    elif value == 6:
         list_all()
     else:
         exit()
@@ -71,6 +72,25 @@ def deactivate_hw():
         hw.deactivate()
         db.session.commit()
         click.echo('Deactivated homework: ' + str(hw.id))
+    else:
+        click.echo('No such homework: ' + str(id))
+
+
+def delete_hw():
+    id = click.prompt('ID of the homework to delete', type=int)
+    hw = Homework.query.get(id)
+    if hw:
+        if not click.confirm('Please confirm!', default=False):
+            return
+
+        for item in hw.items:
+            for test in item.tests:
+                db.session.delete(test)
+
+            db.session.delete(item)
+        db.session.delete(hw)
+        db.session.commit()
+        click.echo('Deleted homework: ' + str(hw.id))
     else:
         click.echo('No such homework: ' + str(id))
 
