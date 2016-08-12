@@ -1,0 +1,110 @@
+from flask_sqlalchemy import Model
+from moulinette import db
+from datetime import datetime
+
+
+class Homework(Model):
+    __tablename__ = 'homework'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=True, nullable=False)
+    description = db.Column(db.Text, default='')
+
+    created = db.Column(db.DateTime, default=datetime.now)
+    updated = db.Column(db.DateTime, default=datetime.now,
+                        onupdate=datetime.now)
+
+    items = db.relationship('Item', backref='homework')
+
+    active = db.Column(db.Boolean, default=True)
+
+    def __init__(self, name, description=''):
+        self.name = name
+        self.description = description
+
+    def add_item(self, name, description=''):
+        i = Item(self.id, name, description)
+        db.session.add(i)
+        db.session.commit()
+        return i
+
+    def activate(self):
+        self.active = True
+
+    def deactivate(self):
+        self.active = False
+
+
+class Item(Model):
+    __tablename__ = 'item'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    description = db.Column(db.Text, default='')
+
+    created = db.Column(db.DateTime, default=datetime.now)
+    updated = db.Column(db.DateTime, default=datetime.now,
+                        onupdate=datetime.now)
+
+    homework_id = db.Column(db.Integer, db.ForeignKey('homework.id'),
+                            nullable=False)
+    tests = db.relationship('Test', backref='item')
+
+    def __init__(self, homework_id, name, description=''):
+        self.name = name
+        self.description = description
+        self.homework_id = homework_id
+
+    def add_test(self, tinput, toutput):
+        t = Test(self.id, tinput, toutput)
+        db.session.add(t)
+        db.session.commit()
+        return t
+
+
+class Test(Model):
+    __tablename__ = 'test'
+    id = db.Column(db.Integer, primary_key=True)
+    created = db.Column(db.DateTime, default=datetime.now)
+    updated = db.Column(db.DateTime, default=datetime.now,
+                        onupdate=datetime.now)
+
+    stdin = db.Column(db.Text)
+    stdout = db.Column(db.Text)
+
+    item_id = db.Column(db.Integer, db.ForeignKey('item.id'), nullable=False)
+
+    def __init__(self, item_id, stdin, stdout):
+        self.item_id = item_id
+        self.stdin = stdin
+        self.stdout = stdout
+
+    def get_input_output(self):
+        return self.stdin, self.stdout
+
+    def validate(self, out):
+        testlines = []
+        outlines = []
+        for line in self.stdout:
+            testlines.append(line.strip())
+        for line in out:
+            outlines.append(line.strip())
+
+        if len(outlines) > len(testlines):
+            raise ExcessiveOutput()
+        elif len(outlines) < len(testlines):
+            raise MissingOutput()
+
+        for i in range(len(outlines)):
+            if outlines[i] != testlines[i]:
+                raise WrongOutput()
+
+
+class MissingOutput(Exception):
+    pass
+
+
+class ExcessiveOutput(Exception):
+    pass
+
+
+class WrongOutput(Exception):
+    pass
