@@ -14,11 +14,12 @@ class Homework(db.Model):
 
     items = db.relationship('Item', backref='homework')
 
-    active = db.Column(db.Boolean, default=True)
+    active = db.Column(db.Boolean, nullable=False)
 
     def __init__(self, name, description=''):
         self.name = name
         self.description = description
+        self.active = True
 
     def add_item(self, name, description=''):
         i = Item(self.id, name, description)
