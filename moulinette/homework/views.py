@@ -2,8 +2,60 @@ from flask_restful import Resource, reqparse, abort
 from moulinette.homework.models import *
 
 
+def serializeHomework(hw):
+    items = []
+    for item in hw.items:
+        tests = []
+        for test in item.tests:
+            tests.append(
+                {
+                    'id': test.id,
+                    'input': test.stdin
+                }
+            )
+
+        items.append(
+            {
+                'id': item.id,
+                'name': item.name,
+                'description': item.description,
+                'tests': tests
+            }
+        )
+
+    return {
+        'id': hw.id,
+        'name': hw.name,
+        'description': hw.description,
+        'items': items
+    }
+
+
+
 class HomeworkResource(Resource):
+    def __init__(self):
+        self.get_parser = reqparse.RequestParser()
+        self.get_parser.add_argument('id',
+                                     type=int,
+                                     required=False)
+
     def get(self):
+        args = self.get_parser.parse_args()
+        hwid = args.get('id', False)
+        if hwid:
+            return self.gethw(hwid)
+        else:
+            return self.getall()
+
+    def gethw(self, hwid):
+        hw = Homework.query.get(hwid)
+        if not hw:
+            return {'error': 'No homework with id ' + hwid}, 404
+        return serializeHomework(hw)
+
+
+
+    def getall(self):
         homeworks = Homework.query.filter(Homework.active).all()
         result = []
 
@@ -21,13 +73,13 @@ class HomeworkResource(Resource):
 class ItemResource(Resource):
     def __init__(self):
         self.get_parser = reqparse.RequestParser()
-        self.get_parser.add_argument('homework_id',
+        self.get_parser.add_argument('id',
                                      type=int,
                                      required=True)
 
     def get(self):
         args = self.get_parser.parse_args()
-        items = Homework.query.get(args['homework_id']).items
+        items = Homework.query.get(args['id']).items
         result = []
 
         for item in items:
@@ -44,12 +96,12 @@ class ItemResource(Resource):
 class TestResource(Resource):
     def __init__(self):
         self.get_parser = reqparse.RequestParser()
-        self.get_parser.add_argument('item_id',
+        self.get_parser.add_argument('id',
                                      type=int,
                                      required=True)
 
         self.post_parser = reqparse.RequestParser()
-        self.post_parser.add_argument('test_id',
+        self.post_parser.add_argument('id',
                                       type=int,
                                       required=True)
         self.post_parser.add_argument('output',
@@ -58,7 +110,7 @@ class TestResource(Resource):
 
     def get(self):
         args = self.get_parser.parse_args()
-        tests = Item.query.get(args['item_id']).tests
+        tests = Item.query.get(args['id']).tests
         result = []
 
         for test in tests:
@@ -72,7 +124,7 @@ class TestResource(Resource):
 
     def post(self):
         args = self.post_parser.parse_args()
-        test = Test.query.get(args['test_id'])
+        test = Test.query.get(args['id'])
 
         result = {
             'result_ok': True,
