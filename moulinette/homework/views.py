@@ -64,11 +64,6 @@ class HomeworkResource(Resource):
 
 class TestResource(Resource):
     def __init__(self):
-        self.get_parser = reqparse.RequestParser()
-        self.get_parser.add_argument('id',
-                                     type=str,
-                                     required=True)
-
         self.post_parser = reqparse.RequestParser()
         self.post_parser.add_argument('id',
                                       type=str,
@@ -76,20 +71,6 @@ class TestResource(Resource):
         self.post_parser.add_argument('output',
                                       type=str,
                                       required=True)
-
-    def get(self):
-        args = self.get_parser.parse_args()
-        tests = Item.query.get(args['id']).tests
-        result = []
-
-        for test in tests:
-            result.append({
-                'id': test.id,
-                'input': test.stdin
-            })
-
-        return {'len': len(result),
-                'result': result}
 
     def post(self):
         args = self.post_parser.parse_args()

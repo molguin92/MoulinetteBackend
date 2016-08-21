@@ -1,6 +1,10 @@
 import click
+from itsdangerous import URLSafeSerializer
 
+from moulinette import app
 from moulinette.homework.models import *
+
+serializer = URLSafeSerializer(app.config['SECRET_KEY'])
 
 
 def startup():
@@ -38,7 +42,7 @@ def create_hw():
     db.session.add(hw)
     db.session.commit()
 
-    click.echo('Homework created with id' + str(hw.id))
+    click.echo('Homework created with id: ' + serializer.dumps(hw.id))
     additem = click.confirm('Do you wish to add an item to this homework?')
     while additem:
         add_item_to_homework(hw)
@@ -50,7 +54,7 @@ def add_item_to_homework(hw):
     description = click.prompt('Description', type=str)
 
     item = hw.add_item(name, description)
-    click.echo('Created item with id: ' + str(item.id))
+    click.echo('Created item with id: ' + serializer.dumps(item.id))
     addtest = click.confirm('Do you wish to add a test to this item?')
     while addtest:
         add_test_to_item(item)
@@ -62,23 +66,25 @@ def add_test_to_item(item):
     stdout = click.prompt('OUTPUT', type=str)
 
     t = item.add_test(stdin, stdout)
-    click.echo('Created test with id: ' + str(t.id))
+    click.echo('Created test with id: ' + serializer.dumps(t.id))
 
 
 def deactivate_hw():
-    id = click.prompt('ID of the homework to deactivate', type=int)
-    hw = Homework.query.get(id)
+    id = click.prompt('ID of the homework to deactivate', type=str)
+    realid = serializer.loads(id)
+    hw = Homework.query.get(realid)
     if hw:
         hw.deactivate()
         db.session.commit()
-        click.echo('Deactivated homework: ' + str(hw.id))
+        click.echo('Deactivated homework: ' + serializer.dumps(hw.id))
     else:
-        click.echo('No such homework: ' + str(id))
+        click.echo('No such homework: ' + id)
 
 
 def delete_hw():
-    id = click.prompt('ID of the homework to delete', type=int)
-    hw = Homework.query.get(id)
+    id = click.prompt('ID of the homework to delete', type=str)
+    realid = serializer.loads(id)
+    hw = Homework.query.get(realid)
     if hw:
         if not click.confirm('Please confirm!', default=False):
             return
@@ -90,16 +96,16 @@ def delete_hw():
             db.session.delete(item)
         db.session.delete(hw)
         db.session.commit()
-        click.echo('Deleted homework: ' + str(hw.id))
+        click.echo('Deleted homework: ' + serializer.dumps(hw.id))
     else:
-        click.echo('No such homework: ' + str(id))
+        click.echo('No such homework: ' + id)
 
 
 def list_active():
     active = Homework.query.filter(Homework.active).all()
     click.echo('Active assigments: (id - name)')
     for hw in active:
-        click.echo(str(hw.id) + ' - ' + hw.name)
+        click.echo(serializer.dumps(hw.id) + ' - ' + hw.name)
     click.echo('\n')
 
 
@@ -107,7 +113,7 @@ def list_all():
     active = Homework.query.all()
     click.echo('Assigments: (id - name)')
     for hw in active:
-        click.echo(str(hw.id) + ' - ' + hw.name)
+        click.echo(serializer.dumps(hw.id) + ' - ' + hw.name)
     click.echo('\n')
 
 
