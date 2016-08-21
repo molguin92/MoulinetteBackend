@@ -39,14 +39,9 @@ class HomeworkCollectionResource(Resource):
         result = []
 
         for hw in homeworks:
-            result.append({
-                'id': serializer.dumps(hw.id),
-                'name': hw.name,
-                'description': hw.description
-            })
+            result.append(serialize_homework(hw))
 
-        return {'len': len(result),
-                'result': result}
+        return {'result': result}
 
 
 class HomeworkResource(Resource):
