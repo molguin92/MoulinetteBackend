@@ -1,3 +1,5 @@
+import sys
+
 import click
 from itsdangerous import URLSafeSerializer
 
@@ -61,9 +63,25 @@ def add_item_to_homework(hw):
         addtest = click.confirm('Do you wish to add another test?')
 
 
+def getTestInOut():
+    click.echo('Enter test input (Ctrl-D to finish):')
+    stdin = sys.stdin.read()
+    click.echo('Enter test output (Ctrl-D to finish):')
+    stdout = sys.stdin.read()
+    return stdin, stdout
+
+
 def add_test_to_item(item):
-    stdin = click.prompt('INPUT', type=str)
-    stdout = click.prompt('OUTPUT', type=str)
+    stdin, stdout = '', ''
+    while True:
+        stdin, stdout = getTestInOut()
+        click.echo('\nTest input:\n')
+        click.echo(stdin)
+        click.echo('\nTest output:\n')
+        click.echo(stdout)
+
+        if click.confirm('\nIs this correct?', default=True):
+            break
 
     t = item.add_test(stdin, stdout)
     click.echo('Created test with id: ' + serializer.dumps(t.id))
