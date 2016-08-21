@@ -1,20 +1,46 @@
 from flask_restful import Resource, reqparse, abort
+
+from moulinette import serializer
 from moulinette.homework.models import *
-from moulinette import app
-from itsdangerous import URLSafeSerializer
+
+
+def serialize_homework(hw):
+    items = []
+    for item in hw.items:
+        tests = []
+        for test in item.tests:
+            tests.append(
+                {
+                    'id': serializer.dumps(test.id),
+                    'input': test.stdin
+                }
+            )
+
+        items.append(
+            {
+                'id': serializer.dumps(item.id),
+                'name': item.name,
+                'description': item.description,
+                'tests': tests
+            }
+        )
+
+    return {
+        'id': serializer.dumps(hw.id),
+        'name': hw.name,
+        'description': hw.description,
+        'items': items
+    }
 
 
 class HomeworkCollectionResource(Resource):
-    def __init__(self):
-        self.serializer = URLSafeSerializer(app.config['SECRET_KEY'])
-
     def get(self):
         homeworks = Homework.query.filter(Homework.active).all()
         result = []
 
         for hw in homeworks:
             result.append({
-                'id': self.serializer.dumps(hw.id),
+                'id': serializer.dumps(hw.id),
                 'name': hw.name,
                 'description': hw.description
             })
@@ -24,42 +50,11 @@ class HomeworkCollectionResource(Resource):
 
 
 class HomeworkResource(Resource):
-    def __init__(self):
-        self.serializer = URLSafeSerializer(app.config['SECRET_KEY'])
-
     def get(self, hwid):
-        hw = Homework.query.get(self.serializer.loads(hwid))
+        hw = Homework.query.get(serializer.loads(hwid))
         if not hw:
             abort(404)
-        return self.serialize_homework(hw)
-
-    def serialize_homework(self, hw):
-        items = []
-        for item in hw.items:
-            tests = []
-            for test in item.tests:
-                tests.append(
-                    {
-                        'id': self.serializer.dumps(test.id),
-                        'input': test.stdin
-                    }
-                )
-
-            items.append(
-                {
-                    'id': self.serializer.dumps(item.id),
-                    'name': item.name,
-                    'description': item.description,
-                    'tests': tests
-                }
-            )
-
-        return {
-            'id': self.serializer.dumps(hw.id),
-            'name': hw.name,
-            'description': hw.description,
-            'items': items
-        }
+        return serialize_homework(hw)
 
 
 class TestResource(Resource):
