@@ -64,7 +64,8 @@ class TestResource(Resource):
 
     def post(self):
         args = self.post_parser.parse_args()
-        test = Test.query.get(args['id'])
+        realid = serializer.loads(args['id'])
+        test = Test.query.get(realid)
 
         result = {
             'result_ok': True,
