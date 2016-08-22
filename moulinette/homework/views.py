@@ -77,7 +77,7 @@ class TestResource(Resource):
         if not test:
             abort(404)
 
-        app.logger.debug(parse.unquote(args['output']))
+        app.logger.info(parse.unquote(args['output']))
 
         try:
             test.validate(parse.unquote(args['output']))
