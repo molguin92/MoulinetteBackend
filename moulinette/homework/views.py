@@ -77,8 +77,6 @@ class TestResource(Resource):
         if not test:
             abort(404)
 
-        print(parse.unquote(args['output']))
-
         try:
             test.validate(parse.unquote(args['output']))
         except MissingOutput:
