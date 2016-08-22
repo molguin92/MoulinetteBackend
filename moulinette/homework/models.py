@@ -1,5 +1,6 @@
-from moulinette import db
 from datetime import datetime
+
+from moulinette import db
 
 
 class Homework(db.Model):
@@ -81,12 +82,9 @@ class Test(db.Model):
         return self.stdin, self.stdout
 
     def validate(self, out):
-        testlines = []
-        outlines = []
-        for line in self.stdout:
-            testlines.append(line.strip())
-        for line in out:
-            outlines.append(line.strip())
+
+        outlines = self.stdout.strip().split("\n")
+        testlines = out.strip().split("\n")
 
         if len(outlines) > len(testlines):
             raise ExcessiveOutput()
