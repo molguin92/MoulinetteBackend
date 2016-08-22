@@ -2,7 +2,7 @@ from urllib import parse
 
 from flask_restful import Resource, reqparse, abort
 
-from moulinette import serializer
+from moulinette import serializer, app
 from moulinette.homework.models import *
 
 
@@ -76,6 +76,8 @@ class TestResource(Resource):
 
         if not test:
             abort(404)
+
+        app.logger.debug(parse.unquote(args['output']))
 
         try:
             test.validate(parse.unquote(args['output']))
