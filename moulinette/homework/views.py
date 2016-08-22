@@ -1,3 +1,5 @@
+from urllib import parse
+
 from flask_restful import Resource, reqparse, abort
 
 from moulinette import serializer
@@ -76,7 +78,7 @@ class TestResource(Resource):
             abort(404)
 
         try:
-            test.validate(args['output'])
+            test.validate(parse.unquote(args['output']))
         except MissingOutput:
             result['result_ok'] = False
             result['error'] = 'Missing output.'
