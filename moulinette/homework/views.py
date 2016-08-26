@@ -6,7 +6,17 @@ from moulinette import serializer
 from moulinette.homework.models import *
 
 
+# This file implements al the views (endpoints) available to the homework
+# model.
+
+
 def serialize_homework(hw):
+    """
+    Unpacks a Homework object into a dictionary for easy JSON parsing.
+    :param hw: A Homework item to be unpacked.
+    :return: Dictionary containing the Homework along with nested Items and
+    Tests.
+    """
     items = []
     for item in hw.items:
         tests = []
@@ -37,6 +47,9 @@ def serialize_homework(hw):
 
 
 class HomeworkCollectionResource(Resource):
+    """
+    Endpoint for fetching ALL (active) homework assignments.
+    """
     def get(self):
         homeworks = Homework.query.filter(Homework.active).all()
         result = []
@@ -48,6 +61,9 @@ class HomeworkCollectionResource(Resource):
 
 
 class HomeworkResource(Resource):
+    """
+    Endpoint for getting a specific assigment.
+    """
     def get(self, hwid):
         hw = Homework.query.get(serializer.loads(hwid))
         if not hw:
@@ -56,6 +72,9 @@ class HomeworkResource(Resource):
 
 
 class TestResource(Resource):
+    """
+    Endpoint for validating test outputs from the client.
+    """
     def __init__(self):
         self.post_parser = reqparse.RequestParser()
         self.post_parser.add_argument('id',
