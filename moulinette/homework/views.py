@@ -14,6 +14,7 @@ def serialize_homework(hw):
             tests.append(
                 {
                     'id': serializer.dumps(test.id),
+                    'description': test.description,
                     'input': test.stdin
                 }
             )

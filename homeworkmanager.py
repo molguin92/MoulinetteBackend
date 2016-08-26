@@ -73,6 +73,7 @@ def getTestInOut():
 
 def add_test_to_item(item):
     stdin, stdout = '', ''
+    description = click.prompt('Description')
     while True:
         stdin, stdout = getTestInOut()
         click.echo('\nTest input:\n')
@@ -83,7 +84,7 @@ def add_test_to_item(item):
         if click.confirm('\nIs this correct?', default=True):
             break
 
-    t = item.add_test(stdin, stdout)
+    t = item.add_test(description, stdin, stdout)
     click.echo('Created test with id: ' + serializer.dumps(t.id))
 
 

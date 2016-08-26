@@ -54,8 +54,8 @@ class Item(db.Model):
         self.description = description
         self.homework_id = homework_id
 
-    def add_test(self, tinput, toutput):
-        t = Test(self.id, tinput, toutput)
+    def add_test(self, description, tinput, toutput):
+        t = Test(self.id, tinput, toutput, description)
         db.session.add(t)
         db.session.commit()
         return t
@@ -64,6 +64,7 @@ class Item(db.Model):
 class Test(db.Model):
     __tablename__ = 'test'
     id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String)
     created = db.Column(db.DateTime, default=datetime.now)
     updated = db.Column(db.DateTime, default=datetime.now,
                         onupdate=datetime.now)
@@ -73,10 +74,11 @@ class Test(db.Model):
 
     item_id = db.Column(db.Integer, db.ForeignKey('item.id'), nullable=False)
 
-    def __init__(self, item_id, stdin, stdout):
+    def __init__(self, item_id, stdin, stdout, description=''):
         self.item_id = item_id
         self.stdin = stdin
         self.stdout = stdout
+        self.description = description
 
     def get_input_output(self):
         return self.stdin, self.stdout
