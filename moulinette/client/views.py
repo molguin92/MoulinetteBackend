@@ -1,3 +1,4 @@
+import flask
 from flask_restful import Resource
 from itsdangerous import URLSafeSerializer
 
@@ -12,4 +13,5 @@ class ClientResource(Resource):
         client = Client()
         db.session.add(client)
         db.session.commit()
-        return clientserializer.dumps(client.id)
+
+        return flask.make_response(clientserializer.dumps(client.id))
