@@ -4,7 +4,10 @@ from flask_restful import Resource, reqparse, abort
 from itsdangerous import URLSafeSerializer
 
 from moulinette import app
+from moulinette.client.models import Client
+from moulinette.client.views import clientserializer
 from moulinette.homework.models import *
+from moulinette.stats_and_logs.models import *
 
 
 # This file implements al the views (endpoints) available to the homework
@@ -88,18 +91,23 @@ class TestResource(Resource):
         self.post_parser.add_argument('output',
                                       type=str,
                                       required=True)
+        self.post_parser.add_argument('client_id',
+                                      type=str,
+                                      required=True)
 
     def post(self):
         args = self.post_parser.parse_args()
         realid = testserializer.loads(args['id'])
+        clientid = clientserializer.loads(args['client_id'])
         test = Test.query.get(realid)
+        client = Client.query.get(clientid)
 
         result = {
             'result_ok': True,
             'error': None
         }
 
-        if not test:
+        if not test and client:
             abort(404)
 
         try:
@@ -113,5 +121,10 @@ class TestResource(Resource):
         except WrongOutput:
             result['result_ok'] = False
             result['error'] = 'Wrong output.'
+
+        log = RequestLog(realid, clientid, result['result_ok'],
+                         result['error'])
+        db.session.add(log)
+        db.session.commit()
 
         return result

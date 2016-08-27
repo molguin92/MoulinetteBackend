@@ -14,8 +14,10 @@ class RequestLog(db.Model):
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'),
                           nullable=False)
     result = db.Column(db.Boolean, nullable=False)
+    error = db.Column(db.String)
 
-    def __init__(self, test_id, client_id, result):
+    def __init__(self, test_id, client_id, result, error=None):
         self.test_id = test_id
         self.client_id = client_id
         self.result = result
+        self.error = error
