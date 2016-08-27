@@ -10,5 +10,5 @@ class ClientResource(Resource):
         client = Client()
         db.session.add(client)
         db.session.commit()
-        return URLSafeSerializer(app.config['SECRET_KEY'],
+        return URLSafeSerializer(app.secret_key,
                                  salt="client-salt").dumps(client.id)

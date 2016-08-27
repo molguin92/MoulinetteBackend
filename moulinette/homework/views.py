@@ -1,13 +1,18 @@
 from urllib import parse
 
 from flask_restful import Resource, reqparse, abort
+from itsdangerous import URLSafeSerializer
 
-from moulinette import serializer
+from moulinette import app
 from moulinette.homework.models import *
 
 
 # This file implements al the views (endpoints) available to the homework
 # model.
+
+hwserializer = URLSafeSerializer(app.secret_key, salt="homework-salt")
+itemserializer = URLSafeSerializer(app.secret_key, salt="item-salt")
+testserializer = URLSafeSerializer(app.secret_key, salt="test-salt")
 
 
 def serialize_homework(hw):
@@ -23,7 +28,7 @@ def serialize_homework(hw):
         for test in item.tests:
             tests.append(
                 {
-                    'id': serializer.dumps(test.id),
+                    'id': testserializer.dumps(test.id),
                     'description': test.description,
                     'input': test.stdin
                 }
@@ -31,7 +36,7 @@ def serialize_homework(hw):
 
         items.append(
             {
-                'id': serializer.dumps(item.id),
+                'id': itemserializer.dumps(item.id),
                 'name': item.name,
                 'description': item.description,
                 'tests': tests
@@ -39,7 +44,7 @@ def serialize_homework(hw):
         )
 
     return {
-        'id': serializer.dumps(hw.id),
+        'id': hwserializer.dumps(hw.id),
         'name': hw.name,
         'description': hw.description,
         'items': items
@@ -65,7 +70,7 @@ class HomeworkResource(Resource):
     Endpoint for getting a specific assigment.
     """
     def get(self, hwid):
-        hw = Homework.query.get(serializer.loads(hwid))
+        hw = Homework.query.get(hwserializer.loads(hwid))
         if not hw:
             abort(404)
         return serialize_homework(hw)
@@ -86,7 +91,7 @@ class TestResource(Resource):
 
     def post(self):
         args = self.post_parser.parse_args()
-        realid = serializer.loads(args['id'])
+        realid = testserializer.loads(args['id'])
         test = Test.query.get(realid)
 
         result = {
