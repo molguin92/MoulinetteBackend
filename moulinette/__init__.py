@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, redirect
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
@@ -17,6 +17,11 @@ api = Api(app)
 
 from moulinette.homework import models
 import moulinette.views
+
+
+@app.route('/')
+def home():
+    return redirect('/api/v1/homeworks')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
