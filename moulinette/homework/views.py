@@ -1,5 +1,3 @@
-from urllib import parse
-
 from flask_restful import Resource, reqparse, abort
 from itsdangerous import URLSafeSerializer
 
@@ -8,7 +6,6 @@ from moulinette.client.models import Client
 from moulinette.client.views import clientserializer
 from moulinette.homework.models import *
 from moulinette.stats_and_logs.models import *
-
 
 # This file implements al the views (endpoints) available to the homework
 # model.
@@ -85,46 +82,56 @@ class TestResource(Resource):
     """
     def __init__(self):
         self.post_parser = reqparse.RequestParser()
-        self.post_parser.add_argument('id',
-                                      type=str,
-                                      required=True)
-        self.post_parser.add_argument('output',
-                                      type=str,
-                                      required=True)
         self.post_parser.add_argument('client_id',
                                       type=str,
                                       required=True)
+        self.post_parser.add_argument('results',
+                                      type=list,
+                                      required=True,
+                                      location='json')
 
     def post(self):
         args = self.post_parser.parse_args()
-        realid = testserializer.loads(args['id'])
         clientid = clientserializer.loads(args['client_id'])
-        test = Test.query.get(realid)
+        results = args['results']
+
         client = Client.query.get(clientid)
+        if not client:
+            abort(401)
 
-        result = {
-            'result_ok': True,
-            'error': None
-        }
+        response = {'results': []}
 
-        if not test and client:
-            abort(404)
+        for test in results:
 
-        try:
-            test.validate(parse.unquote(args['output']))
-        except MissingOutput:
-            result['result_ok'] = False
-            result['error'] = 'Missing output.'
-        except ExcessiveOutput:
-            result['result_ok'] = False
-            result['error'] = 'Excessive output.'
-        except WrongOutput:
-            result['result_ok'] = False
-            result['error'] = 'Wrong output.'
+            realid = testserializer.loads(test['id'])
+            output = test['output']
+            testdb = Test.query.get(realid)
 
-        log = RequestLog(realid, clientid, result['result_ok'],
-                         result['error'])
-        db.session.add(log)
+            if not testdb:
+                abort(404)
+
+            result = {
+                'test_id': test['id'],
+                'result_ok': True,
+                'error': ''
+            }
+
+            try:
+                testdb.validate(output)
+            except MissingOutput:
+                result['result_ok'] = False
+                result['error'] = 'Missing output.'
+            except ExcessiveOutput:
+                result['result_ok'] = False
+                result['error'] = 'Excessive output.'
+            except WrongOutput:
+                result['result_ok'] = False
+                result['error'] = 'Wrong output.'
+
+            response['results'].append(result)
+            log = RequestLog(realid, clientid, result['result_ok'],
+                             result['error'])
+            db.session.add(log)
+
         db.session.commit()
-
-        return result
+        return response
