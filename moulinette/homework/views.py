@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse, abort
-from itsdangerous import URLSafeSerializer
+from itsdangerous import URLSafeSerializer, BadSignature
 
 from moulinette import app
 from moulinette.client.models import Client
@@ -92,7 +92,12 @@ class TestResource(Resource):
 
     def post(self):
         args = self.post_parser.parse_args()
-        clientid = clientserializer.loads(args['client_id'])
+        clientid = -1
+        try:
+            clientid = clientserializer.loads(args['client_id'])
+        except BadSignature:
+            abort(401)
+
         results = args['results']
 
         client = Client.query.get(clientid)
