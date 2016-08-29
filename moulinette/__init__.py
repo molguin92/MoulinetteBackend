@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 # the global configuration variables.
 
 app = Flask(__name__)
+app.config['APPLICATION_ROOT'] = os.environ['APP_ROOT']
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.secret_key = os.environ['SECRET_KEY']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
