@@ -1,11 +1,8 @@
 import flask
 from flask_restful import Resource
-from itsdangerous import URLSafeSerializer
 
-from moulinette import db, app
+from moulinette import db
 from moulinette.client.models import Client
-
-clientserializer = URLSafeSerializer(app.secret_key, salt="client-salt")
 
 
 class ClientResource(Resource):

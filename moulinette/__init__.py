@@ -3,10 +3,7 @@ import os
 from flask import Flask
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
-
-# Main application file.
-# From here we set up the Flask application framework, and initialize
-# the global configuration variables.
+from itsdangerous import URLSafeSerializer
 
 app = Flask(__name__)
 app.config['APPLICATION_ROOT'] = os.environ['APP_ROOT']
@@ -15,6 +12,12 @@ app.secret_key = os.environ['SECRET_KEY']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 api = Api(app)
+
+hwserializer = URLSafeSerializer(app.secret_key, salt="homework-salt")
+itemserializer = URLSafeSerializer(app.secret_key, salt="item-salt")
+testserializer = URLSafeSerializer(app.secret_key, salt="test-salt")
+clientserializer = URLSafeSerializer(app.secret_key, salt="client-salt")
+
 
 from moulinette.homework import models
 import moulinette.views

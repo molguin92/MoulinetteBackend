@@ -1,18 +1,15 @@
 from flask_restful import Resource, reqparse, abort
-from itsdangerous import URLSafeSerializer, BadSignature
+from itsdangerous import BadSignature
 
-from moulinette import app
+from moulinette import hwserializer, itemserializer, testserializer, \
+    clientserializer
 from moulinette.client.models import Client
-from moulinette.client.views import clientserializer
 from moulinette.homework.models import *
 from moulinette.stats_and_logs.models import *
 
+
 # This file implements al the views (endpoints) available to the homework
 # model.
-
-hwserializer = URLSafeSerializer(app.secret_key, salt="homework-salt")
-itemserializer = URLSafeSerializer(app.secret_key, salt="item-salt")
-testserializer = URLSafeSerializer(app.secret_key, salt="test-salt")
 
 
 def serialize_homework(hw):
