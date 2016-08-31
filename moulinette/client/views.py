@@ -1,3 +1,5 @@
+import datetime
+
 from flask import make_response, request
 from flask_restful import Resource
 
@@ -15,9 +17,10 @@ class ClientResource(Resource):
 
         app.logger.info(
             """
-            Remote address {ip} requested a new client id.
-            Assigned ID {cid}
+            {timestamp} Remote address {ip} requested a new client id.
+                        Assigned ID {cid}
             """.format(
+                timestamp=datetime.datetime.now().isoformat(),
                 ip=request.remote_addr,
                 cid=client_id
             )

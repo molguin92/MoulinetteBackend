@@ -142,8 +142,9 @@ class TestResource(Resource):
 
         app.logger.info(
             """
-                Client {cid} validated test results.
-                """.format(
+            {timestamp} Client {cid} validated test results.
+            """.format(
+                timestamp=datetime.now().isoformat(),
                 cid=args['client_id']
             )
         )
