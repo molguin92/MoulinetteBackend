@@ -1,3 +1,4 @@
+import logging
 import os
 from logging.handlers import RotatingFileHandler
 
@@ -16,6 +17,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.logger.addHandler(RotatingFileHandler('.moulinette.log',
                                           maxBytes=5242880,  # 5 MiB
                                           backupCount=3))
+app.logger.setLevel(logging.INFO)
 
 db = SQLAlchemy(app)
 api = Api(app)
