@@ -17,10 +17,10 @@ class ClientResource(Resource):
 
         app.logger.info(
             """
-            {timestamp} Remote address {ip} requested a new client id.
-                        Assigned ID {cid}
+[{timestamp}] Remote address {ip} requested a new client id.
+            Assigned ID {cid}
             """.format(
-                timestamp=datetime.datetime.now().isoformat(),
+                timestamp=datetime.datetime.now().isoformat(sep=" "),
                 ip=request.remote_addr,
                 cid=client_id
             )
