@@ -52,6 +52,7 @@ class HomeworkCollectionResource(Resource):
     """
     Endpoint for fetching ALL (active) homework assignments.
     """
+
     def get(self):
         homeworks = Homework.query.filter(Homework.active).all()
         result = []
@@ -66,6 +67,7 @@ class HomeworkResource(Resource):
     """
     Endpoint for getting a specific assignment.
     """
+
     def get(self, hwid):
         hw = Homework.query.get(hwserializer.loads(hwid))
         if not hw:
@@ -77,6 +79,7 @@ class TestResource(Resource):
     """
     Endpoint for validating test outputs from the client.
     """
+
     def __init__(self):
         self.post_parser = reqparse.RequestParser()
         self.post_parser.add_argument('client_id',
@@ -138,12 +141,10 @@ class TestResource(Resource):
         db.session.commit()
 
         app.logger.info(
-            app.logger.info(
-                """
+            """
                 Client {cid} validated test results.
                 """.format(
-                    cid=args['client_id']
-                )
+                cid=args['client_id']
             )
         )
 
