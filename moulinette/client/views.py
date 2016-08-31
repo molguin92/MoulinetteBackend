@@ -1,7 +1,7 @@
-import flask
+from flask import make_response, request
 from flask_restful import Resource
 
-from moulinette import db
+from moulinette import db, clientserializer, app
 from moulinette.client.models import Client
 
 
@@ -11,4 +11,16 @@ class ClientResource(Resource):
         db.session.add(client)
         db.session.commit()
 
-        return flask.make_response(clientserializer.dumps(client.id))
+        client_id = clientserializer.dumps(client.id)
+
+        app.logger.info(
+            """
+            Remote address {ip} requested a new client id.
+            Assigned ID {cid}
+            """.format(
+                ip=request.remote_addr,
+                cid=client_id
+            )
+        )
+
+        return make_response(client_id)

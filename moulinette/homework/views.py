@@ -2,7 +2,7 @@ from flask_restful import Resource, reqparse, abort
 from itsdangerous import BadSignature
 
 from moulinette import hwserializer, itemserializer, testserializer, \
-    clientserializer
+    clientserializer, app
 from moulinette.client.models import Client
 from moulinette.homework.models import *
 from moulinette.stats_and_logs.models import *
@@ -64,7 +64,7 @@ class HomeworkCollectionResource(Resource):
 
 class HomeworkResource(Resource):
     """
-    Endpoint for getting a specific assigment.
+    Endpoint for getting a specific assignment.
     """
     def get(self, hwid):
         hw = Homework.query.get(hwserializer.loads(hwid))
@@ -136,4 +136,15 @@ class TestResource(Resource):
             db.session.add(log)
 
         db.session.commit()
+
+        app.logger.info(
+            app.logger.info(
+                """
+                Client {cid} validated test results.
+                """.format(
+                    cid=args['client_id']
+                )
+            )
+        )
+
         return response
