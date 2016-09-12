@@ -41,7 +41,7 @@ def home():
 def test():
     url = '/api/v1/logs'
     if app.config.get('APPLICATION_ROOT', False):
-        url = app['APPLICATION_ROOT'] + url
+        url = app.config['APPLICATION_ROOT'] + url
 
     return render_template('d3vis.html', url=url)
 
