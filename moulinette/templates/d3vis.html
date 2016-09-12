@@ -43,8 +43,7 @@ body {
           .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var prefix = {{ prefix|safe }};
-        d3.json("." + prefix + "/api/v1/logs", function (indata) {
+        d3.json("/moulinette/api/v1/logs", function (indata) {
             var results = indata.results;
             var datestats = {};
 

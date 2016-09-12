@@ -39,7 +39,7 @@ def home():
 
 @app.route('/stats')
 def test():
-    return render_template('d3vis.html', prefix=app.config['APPLICATION_ROOT'])
+    return render_template('d3vis.html')
 
 
 if __name__ == '__main__':
