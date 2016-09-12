@@ -2,6 +2,7 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
+from flask import render_template
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import URLSafeSerializer
@@ -34,6 +35,11 @@ import moulinette.views
 @app.route('/')
 def home():
     return app.send_static_file("index.html")
+
+
+@app.route('/stats')
+def test():
+    return render_template('d3vis.html', prefix=app.config['APPLICATION_ROOT'])
 
 
 if __name__ == '__main__':
