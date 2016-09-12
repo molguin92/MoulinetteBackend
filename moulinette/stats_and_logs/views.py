@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask_restful import Resource
 
 from moulinette import clientserializer, testserializer
@@ -6,7 +8,11 @@ from moulinette.stats_and_logs.models import *
 
 class LogResource(Resource):
     def get(self):
-        logs = RequestLog.query.all()
+        startdate = datetime.today().date() - timedelta(days=7)
+        print(startdate)
+        logs = RequestLog.query.filter(
+            RequestLog.created > startdate
+        ).all()
         result = []
 
         for log in logs:
@@ -20,4 +26,5 @@ class LogResource(Resource):
                 }
             )
 
-        return {"results": result}
+        print(startdate.isoformat())
+        return {"results": result, "startdate": startdate.isoformat()}
