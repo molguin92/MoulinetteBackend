@@ -143,11 +143,12 @@ div.tooltip {
 
             svg.append("g")
                 .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
+            .attr("transform", "translate(0," + (height + 15) + ")")
                 .call(xAxis);
 
             svg.append("g")
                 .attr("class", "y axis")
+            .attr("transform", "translate(-15, 0)")
                 .call(yAxis)
                 .append("text")
                 .attr("transform", "rotate(-90)")
