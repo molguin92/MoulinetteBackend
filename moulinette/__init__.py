@@ -10,7 +10,7 @@ from itsdangerous import URLSafeSerializer
 from moulinette.flask_ext import *
 
 app = ExtFlask(__name__)
-app.config['APPLICATION_ROOT'] = os.environ['APP_ROOT']
+app.config['APPLICATION_ROOT'] = os.environ.get('APP_ROOT', False)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.secret_key = os.environ['SECRET_KEY']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -39,7 +39,11 @@ def home():
 
 @app.route('/stats')
 def test():
-    return render_template('d3vis.html')
+    url = '/api/v1/logs'
+    if app.config.get('APPLICATION_ROOT', False):
+        url = app['APPLICATION_ROOT'] + url
+
+    return render_template('d3vis.html', url=url)
 
 
 if __name__ == '__main__':

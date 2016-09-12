@@ -43,7 +43,7 @@ body {
           .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        d3.json("/moulinette/api/v1/logs", function (indata) {
+        d3.json('{{ url|safe }}', function (indata) {
             var results = indata.results;
             var datestats = {};
 
