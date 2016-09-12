@@ -23,6 +23,26 @@ body {
   stroke-width: 1.5px;
 }
 
+.dot {
+    stroke: steelblue;
+    stroke-width: 0.5px;
+    fill: steelblue;
+    r: 3.0;
+}
+
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 100px;
+    height: 30px;
+    padding: 2px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 0px;
+    pointer-events: none;
+}
+
 </style>
 <head>
     <meta charset="UTF-8">
@@ -43,6 +63,28 @@ body {
           .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+        var x = d3.scaleTime()
+        .range([0, width]);
+
+        var y = d3.scaleLinear()
+        .range([height, 0]);
+
+        var xAxis = d3.axisBottom(x);
+
+        var yAxis = d3.axisLeft(y);
+
+        var line = d3.line()
+        .x(function (d) { return x(new Date(d.key)); })
+        .y(function (d) { return y(d.value); });
+
+        var xMap = function (d) { return x(new Date(d.key)); };
+        var yMap = function (d) { return y(d.value); };
+
+        // Define the div for the tooltip
+        var div = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
         d3.json('{{ url|safe }}', function (indata) {
             var results = indata.results;
             var datestats = {};
@@ -58,20 +100,6 @@ body {
             }
 
             var fdata = d3.entries(datestats);
-
-            var x = d3.scaleTime()
-            .range([0, width]);
-
-            var y = d3.scaleLinear()
-                .range([height, 0]);
-
-            var xAxis = d3.axisBottom(x);
-
-            var yAxis = d3.axisLeft(y);
-
-            var line = d3.line()
-                .x(function(d) { return x(new Date(d.key)); })
-                .y(function(d) { return y(d.value); });
 
 
             x.domain(d3.extent(fdata, function (d) {
@@ -89,6 +117,30 @@ body {
                     .attr("class", "line")
                     .attr("d", line);
 
+
+            // draw dots
+            svg.selectAll(".dot")
+            .data(newData)
+            .enter().append("circle")
+            .attr("class", "dot")
+            .attr("cx", xMap)
+            .attr("cy", yMap)
+            .on("mouseover", function (d) {
+                div.transition()
+                .duration(200)
+                .style("opacity", .9);
+                div.html(new Date(d.key).toDateString() + "<br/>Requests: " +
+                        d.value)
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+            })
+            .on("mouseout", function (d) {
+                div.transition()
+                .duration(500)
+                .style("opacity", 0);
+            });
+
+
             svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height + ")")
@@ -102,8 +154,8 @@ body {
                 .attr("y", 6)
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
-                .text("Price ($)");
-
+            .style("fill", "#000000")
+            .text("Requests");
         })
     </script>
 
