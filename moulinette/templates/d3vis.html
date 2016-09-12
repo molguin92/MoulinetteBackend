@@ -2,26 +2,26 @@
 <html lang="en">
 <style>
 
-    body {
-        font: 10px sans-serif;
-    }
+body {
+  font: 10px sans-serif;
+}
 
-    .axis path,
-    .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-    }
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
 
-    .x.axis path {
-        display: none;
-    }
+.x.axis path {
+  display: none;
+}
 
-    .line {
-        fill: none;
-        stroke: steelblue;
-        stroke-width: 1.5px;
-    }
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
 
 </style>
 <head>
@@ -31,75 +31,71 @@
     <script src="http://underscorejs.org/underscore-min.js"></script>
 </head>
 <body>
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    var margin = {top: 20, right: 20, bottom: 30, left: 50},
+        var margin = {top: 20, right: 20, bottom: 30, left: 50},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
-    var svg = d3.select("body").append("svg")
+        var svg = d3.select("body").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-            .append("g")
+          .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    var prefix = {
-    { prefix | safe }
-    }
-    ;
-    d3.json("." + prefix + "/api/v1/logs", function (indata) {
-        var results = indata.results;
-        var datestats = {};
+        var prefix = {{ prefix|safe }};
+        d3.json("." + prefix + "/api/v1/logs", function (indata) {
+            var results = indata.results;
+            var datestats = {};
 
-        for (var i = 0; i < results.length; i++) {
-            var res = results[i];
-            var date = new Date(res.timestamp).toDateString();
-            if (datestats.hasOwnProperty(date))
-                datestats[date] += 1;
-            else
-                datestats[date] = 1;
-        }
+            for(var i = 0; i < results.length; i++)
+            {
+                var res = results[i];
+                var date = new Date(res.timestamp).toDateString();
+                if(datestats.hasOwnProperty(date))
+                    datestats[date] += 1;
+                else
+                    datestats[date] = 1;
+            }
 
-        var fdata = d3.entries(datestats);
+            var fdata = d3.entries(datestats);
 
-        var x = d3.scaleTime()
-                .range([0, width]);
+            var x = d3.scaleTime()
+            .range([0, width]);
 
-        var y = d3.scaleLinear()
+            var y = d3.scaleLinear()
                 .range([height, 0]);
 
-        var xAxis = d3.axisBottom(x);
+            var xAxis = d3.axisBottom(x);
 
-        var yAxis = d3.axisLeft(y);
+            var yAxis = d3.axisLeft(y);
 
-        var line = d3.line()
-                .x(function (d) { return x(new Date(d.key)); })
-                .y(function (d) { return y(d.value); });
+            var line = d3.line()
+                .x(function(d) { return x(new Date(d.key)); })
+                .y(function(d) { return y(d.value); });
 
 
-        x.domain(d3.extent(fdata, function (d) {
-            return new Date(d.key);
-        })).ticks(d3.timeDay);
-        y.domain([0, d3.max(fdata, function (d) { return d.value; }) + 1]);
+            x.domain(d3.extent(fdata, function (d) {
+                return new Date(d.key);
+            })).ticks(d3.timeDay);
+            y.domain([0, d3.max(fdata, function(d) { return d.value; }) + 1]);
 
-        var newData = x.ticks().map(function (d) {
-            return _.find(fdata, {key: d.toDateString()}) || {
-                        key: d.toDateString(),
-                        value: 0
-                    };
-        });
+            var newData = x.ticks().map(function(d) {
+                return _.find(fdata, {key: d.toDateString()}) || {key: d.toDateString(),
+                            value: 0};
+            });
 
-        svg.append("path")
-                .datum(newData)
-                .attr("class", "line")
-                .attr("d", line);
+            svg.append("path")
+                    .datum(newData)
+                    .attr("class", "line")
+                    .attr("d", line);
 
-        svg.append("g")
+            svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis);
 
-        svg.append("g")
+            svg.append("g")
                 .attr("class", "y axis")
                 .call(yAxis)
                 .append("text")
@@ -109,8 +105,8 @@
                 .style("text-anchor", "end")
                 .text("Price ($)");
 
-    })
-</script>
+        })
+    </script>
 
 </body>
 </html>
