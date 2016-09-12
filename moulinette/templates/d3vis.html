@@ -2,46 +2,46 @@
 <html lang="en">
 <style>
 
-body {
-  font: 10px sans-serif;
-}
+    body {
+        font: 10px sans-serif;
+    }
 
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
 
-.x.axis path {
-  display: none;
-}
+    .x.axis path {
+        display: none;
+    }
 
-.line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-}
+    .line {
+        fill: none;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+    }
 
-.dot {
-    stroke: steelblue;
-    stroke-width: 0.5px;
-    fill: steelblue;
-    r: 3.0;
-}
+    .dot {
+        stroke: steelblue;
+        stroke-width: 0.5px;
+        fill: steelblue;
+        r: 3.0;
+    }
 
-div.tooltip {
-    position: absolute;
-    text-align: center;
-    width: 100px;
-    height: 30px;
-    padding: 2px;
-    font: 12px sans-serif;
-    background: lightsteelblue;
-    border: 0px;
-    border-radius: 0px;
-    pointer-events: none;
-}
+    div.tooltip {
+        position: absolute;
+        text-align: center;
+        width: 100px;
+        height: 30px;
+        padding: 2px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 0px;
+        border-radius: 0px;
+        pointer-events: none;
+    }
 
 </style>
 <head>
@@ -51,114 +51,114 @@ div.tooltip {
     <script src="http://underscorejs.org/underscore-min.js"></script>
 </head>
 <body>
-    <script type="text/javascript">
+<script type="text/javascript">
 
-        var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    var margin = {top: 20, right: 20, bottom: 30, left: 50},
             width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+            height = 500 - margin.top - margin.bottom
 
-        var svg = d3.select("body").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var x = d3.scaleTime()
-        .range([0, width]);
+    var x = d3.scaleTime()
+    .range([15, width]);
 
-        var y = d3.scaleLinear()
-        .range([height, 0]);
+    var y = d3.scaleLinear()
+    .range([height - 15, 0]);
 
-        var xAxis = d3.axisBottom(x);
+    var xAxis = d3.axisBottom(x);
 
-        var yAxis = d3.axisLeft(y);
+    var yAxis = d3.axisLeft(y);
 
-        var line = d3.line()
-        .x(function (d) { return x(new Date(d.key)); })
-        .y(function (d) { return y(d.value); });
+    var line = d3.line()
+    .x(function (d) { return x(new Date(d.key)); })
+    .y(function (d) { return y(d.value); });
 
-        var xMap = function (d) { return x(new Date(d.key)); };
-        var yMap = function (d) { return y(d.value); };
+    var xMap = function (d) { return x(new Date(d.key)); };
+    var yMap = function (d) { return y(d.value); };
 
-        // Define the div for the tooltip
-        var div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+    // Define the div for the tooltip
+    var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
-        d3.json('{{ url|safe }}', function (indata) {
-            var results = indata.results;
-            var datestats = {};
+    d3.json('{{ url|safe }}', function (indata) {
+        var results = indata.results;
+        var datestats = {};
 
-            for(var i = 0; i < results.length; i++)
-            {
-                var res = results[i];
-                var date = new Date(res.timestamp).toDateString();
-                if(datestats.hasOwnProperty(date))
-                    datestats[date] += 1;
-                else
-                    datestats[date] = 1;
-            }
+        for (var i = 0; i < results.length; i++) {
+            var res = results[i];
+            var date = new Date(res.timestamp).toDateString();
+            if (datestats.hasOwnProperty(date))
+                datestats[date] += 1;
+            else
+                datestats[date] = 1;
+        }
 
-            var fdata = d3.entries(datestats);
+        var fdata = d3.entries(datestats);
 
+        x.domain(d3.extent(fdata, function (d) {
+            return new Date(d.key);
+        })).ticks(d3.timeDay);
+        y.domain([0, d3.max(fdata, function (d) { return d.value; }) +
+        1]);
 
-            x.domain(d3.extent(fdata, function (d) {
-                return new Date(d.key);
-            })).ticks(d3.timeDay);
-            y.domain([0, d3.max(fdata, function(d) { return d.value; }) + 1]);
+        var newData = x.ticks().map(function (d) {
+            return _.find(fdata, {key: d.toDateString()}) || {
+                        key: d.toDateString(),
+                        value: 0
+                    };
+        });
 
-            var newData = x.ticks().map(function(d) {
-                return _.find(fdata, {key: d.toDateString()}) || {key: d.toDateString(),
-                            value: 0};
-            });
-
-            svg.append("path")
-                    .datum(newData)
-                    .attr("class", "line")
-                    .attr("d", line);
-
-
-            // draw dots
-            svg.selectAll(".dot")
-            .data(newData)
-            .enter().append("circle")
-            .attr("class", "dot")
-            .attr("cx", xMap)
-            .attr("cy", yMap)
-            .on("mouseover", function (d) {
-                div.transition()
-                .duration(200)
-                .style("opacity", .9);
-                div.html(new Date(d.key).toDateString() + "<br/>Requests: " +
-                        d.value)
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px");
-            })
-            .on("mouseout", function (d) {
-                div.transition()
-                .duration(500)
-                .style("opacity", 0);
-            });
+        svg.append("path")
+        .datum(newData)
+        .attr("class", "line")
+        .attr("d", line);
 
 
-            svg.append("g")
-                .attr("class", "x axis")
-            .attr("transform", "translate(0," + (height + 15) + ")")
-                .call(xAxis);
-
-            svg.append("g")
-                .attr("class", "y axis")
-            .attr("transform", "translate(-15, 0)")
-                .call(yAxis)
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-            .style("fill", "#000000")
-            .text("Requests");
+        // draw dots
+        svg.selectAll(".dot")
+        .data(newData)
+        .enter().append("circle")
+        .attr("class", "dot")
+        .attr("cx", xMap)
+        .attr("cy", yMap)
+        .on("mouseover", function (d) {
+            div.transition()
+            .duration(200)
+            .style("opacity", .9);
+            div.html(new Date(d.key).toDateString() + "<br/>Requests: " +
+                    d.value)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
         })
-    </script>
+        .on("mouseout", function (d) {
+            div.transition()
+            .duration(500)
+            .style("opacity", 0);
+        });
+
+
+        svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+        svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .style("fill", "#000000")
+        .text("Requests");
+    })
+</script>
 
 </body>
 </html>
