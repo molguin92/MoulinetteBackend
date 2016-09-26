@@ -121,13 +121,14 @@ class Test(db.Model):
     created = db.Column(db.DateTime, default=datetime.now)
     updated = db.Column(db.DateTime, default=datetime.now,
                         onupdate=datetime.now)
+    timeout = db.Column(db.Integer, default=10)
 
     stdin = db.Column(db.Text)
     stdout = db.Column(db.Text)
 
     item_id = db.Column(db.Integer, db.ForeignKey('item.id'), nullable=False)
 
-    def __init__(self, item_id, stdin, stdout, description=''):
+    def __init__(self, item_id, stdin, stdout, description='', timeout=10):
         """
         Constructs a new Test instance, taking the parent Item id, an input
         for the program to be tested and a correct output, along with an
@@ -141,6 +142,7 @@ class Test(db.Model):
         self.stdin = stdin
         self.stdout = stdout
         self.description = description
+        self.timeout = timeout
 
     def get_input_output(self):
         """

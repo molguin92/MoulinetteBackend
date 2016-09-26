@@ -27,7 +27,8 @@ def serialize_homework(hw):
                 {
                     'id': testserializer.dumps(test.id),
                     'description': test.description,
-                    'input': test.stdin
+                    'input': test.stdin,
+                    'timeout': test.timeout
                 }
             )
 
