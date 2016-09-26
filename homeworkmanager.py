@@ -160,7 +160,7 @@ def add_test_to_item(item):
             if click.confirm('\nIs this correct?', default=True):
                 break
 
-    t = item.add_test(description, stdin, stdout, timeout=timeout)
+    t = item.add_test(description, stdin, stdout, timeout)
     click.echo('Created test with id: ' + testserializer.dumps(t.id))
 
 

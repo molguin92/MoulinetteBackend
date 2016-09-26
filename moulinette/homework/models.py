@@ -102,7 +102,7 @@ class Item(db.Model):
         :param toutput: Expected output, for verifying correctness.
         :return: A Test object.
         """
-        t = Test(self.id, tinput, toutput, description, timeout=timeout)
+        t = Test(self.id, tinput, toutput, description, timeout)
         db.session.add(t)
         db.session.commit()
         return t
