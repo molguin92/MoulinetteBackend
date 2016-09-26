@@ -121,7 +121,7 @@ class Test(db.Model):
     created = db.Column(db.DateTime, default=datetime.now)
     updated = db.Column(db.DateTime, default=datetime.now,
                         onupdate=datetime.now)
-    timeout = db.Column(db.Integer, default=10)
+    timeout = db.Column(db.Integer, default=10, nullable=False)
 
     stdin = db.Column(db.Text)
     stdout = db.Column(db.Text)
@@ -142,7 +142,7 @@ class Test(db.Model):
         self.stdin = stdin
         self.stdout = stdout
         self.description = description
-        self.timeout = timeout
+        self.timeout = timeout if timeout else 10
 
     def get_input_output(self):
         """
