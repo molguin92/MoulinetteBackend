@@ -121,7 +121,7 @@ class Test(db.Model):
     created = db.Column(db.DateTime, default=datetime.now)
     updated = db.Column(db.DateTime, default=datetime.now,
                         onupdate=datetime.now)
-    timeout = db.Column(db.Integer, default=10, nullable=False)
+    timeout = db.Column(db.Integer, default=10)
 
     stdin = db.Column(db.Text)
     stdout = db.Column(db.Text)

@@ -17,6 +17,7 @@ def startup():
         '6. Delete a homework assignment.\n'
         '7. List active homework assignments.\n'
         '8. List ALL homework assignments.\n'
+        '9. Fix all tests with null timeout.\n'
         '0. Exit.\n>> ', default=0, type=int, show_default=False)
 
     click.echo('\n')
@@ -37,8 +38,19 @@ def startup():
         list_active()
     elif value == 8:
         list_all()
+    elif value == 9:
+        fix_tests_timeout()
     else:
         exit()
+
+
+def fix_tests_timeout():
+    tests = Test.query.all()
+    for test in tests:
+        if not test.timeout:
+            test.timeout = 10
+            db.session.add(test)
+            db.session.commit()
 
 
 def create_hw():
