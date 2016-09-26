@@ -97,7 +97,6 @@ def edit_item():
     db.session.commit()
 
 
-
 def add_item_to_homework(hw):
     name = click.prompt('Name of the homework item', type=str)
     click.echo('Description: (Ctrl-D to finish):')
@@ -122,17 +121,34 @@ def getTestInOut():
 def add_test_to_item(item):
     stdin, stdout = '', ''
     description = click.prompt('Description')
-    while True:
-        stdin, stdout = getTestInOut()
-        click.echo('\nTest input:\n')
-        click.echo(stdin)
-        click.echo('\nTest output:\n')
-        click.echo(stdout)
+    timeout = click.prompt('Timeout (in seconds)', type=int, default=10)
+    if click.confirm("Get input and output from files?", default=False):
+        while True:
+            infname = click.prompt('Path to input file')
+            outfname = click.prompt('Path to output file')
+            with open(infname, 'r') as infile, open(outfname, 'r') as outfile:
+                stdin = infile.read()
+                stdout = outfile.read()
 
-        if click.confirm('\nIs this correct?', default=True):
-            break
+                click.echo('\nTest input:\n')
+                click.echo(stdin)
+                click.echo('\nTest output:\n')
+                click.echo(stdout)
 
-    t = item.add_test(description, stdin, stdout)
+                if click.confirm('\nIs this correct?', default=True):
+                    break
+    else:
+        while True:
+            stdin, stdout = getTestInOut()
+            click.echo('\nTest input:\n')
+            click.echo(stdin)
+            click.echo('\nTest output:\n')
+            click.echo(stdout)
+
+            if click.confirm('\nIs this correct?', default=True):
+                break
+
+    t = item.add_test(description, stdin, stdout, timeout=timeout)
     click.echo('Created test with id: ' + testserializer.dumps(t.id))
 
 

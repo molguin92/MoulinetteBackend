@@ -94,7 +94,7 @@ class Item(db.Model):
         self.description = description
         self.homework_id = homework_id
 
-    def add_test(self, description, tinput, toutput):
+    def add_test(self, description, tinput, toutput, timeout=10):
         """
         Adds a Test to this Item. Returns the Test for chaining method calls.
         :param description: Description of the new test.
@@ -102,7 +102,7 @@ class Item(db.Model):
         :param toutput: Expected output, for verifying correctness.
         :return: A Test object.
         """
-        t = Test(self.id, tinput, toutput, description)
+        t = Test(self.id, tinput, toutput, description, timeout=timeout)
         db.session.add(t)
         db.session.commit()
         return t
