@@ -12,7 +12,7 @@ if __name__ == '__main__':
         tests = Test.query.filter(Test.item_id == item.id).all()
         for test in tests:
             test.stdin = test.stdin.replace(',', '')
-            test.stdout = test.stdout.replace(',', '')
+            test.stdout = test.stdout.replace(' ', ',')
             db.session.add(test)
 
         db.session.add(item)
