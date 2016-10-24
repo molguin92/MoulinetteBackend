@@ -27,7 +27,7 @@ def max_subarray(A):
 
 
 def get_output(str_in):
-    str_in = str_in.split('\n')
+    str_in = str_in.strip().split('\n')
     str_out = ''
     for line in str_in:
         line = line.split(' ')
