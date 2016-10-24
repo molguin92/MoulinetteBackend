@@ -33,7 +33,7 @@ if __name__ == '__main__':
             lstdin = test.stdin.strip().split('\n')
             for i in range(len(lstdin)):
                 line = lstdin[i]
-                linel = line.split(' ')
+                linel = line.strip().split(' ')
                 while is_negative(linel):
                     A = generate_array(len(linel), randint(-500, 0),
                                        randint(0, 500))
