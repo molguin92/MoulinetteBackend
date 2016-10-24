@@ -30,18 +30,18 @@ if __name__ == '__main__':
     for item in items:
         tests = Test.query.filter(Test.item_id == item.id).all()
         for test in tests:
-            lstdout = test.stdout.strip().split('\n')
-            for i in range(len(lstdout)):
-                line = lstdout[i]
+            lstdin = test.stdin.strip().split('\n')
+            for i in range(len(lstdin)):
+                line = lstdin[i]
                 linel = line.split(' ')
                 while is_negative(linel):
                     A = generate_array(len(linel), random.randint(-500, 0),
                                        random.randint(0, 500))
                     line = str(A)[1:len(A) - 1].replace(',', '')
                     linel = line.split(' ')
-                lstdout[i] = line
+                lstdin[i] = line
 
-            test.stdin = '\n'.join(lstdout)
+            test.stdin = '\n'.join(lstdin)
             test.stdout = get_output(test.stdin)
             test.timeout = 600
             db.session.add(test)
