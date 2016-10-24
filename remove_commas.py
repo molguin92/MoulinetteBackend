@@ -1,4 +1,4 @@
-from random import random
+from random import randint
 
 import click
 
@@ -35,8 +35,8 @@ if __name__ == '__main__':
                 line = lstdin[i]
                 linel = line.split(' ')
                 while is_negative(linel):
-                    A = generate_array(len(linel), random.randint(-500, 0),
-                                       random.randint(0, 500))
+                    A = generate_array(len(linel), randint(-500, 0),
+                                       randint(0, 500))
                     line = str(A)[1:len(A) - 1].replace(',', '')
                     linel = line.split(' ')
                 lstdin[i] = line
