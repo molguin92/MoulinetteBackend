@@ -32,7 +32,7 @@ if __name__ == '__main__':
         for test in tests:
             lstdout = test.stdout.strip().split('\n')
             for i in range(len(lstdout)):
-                line = lstdout(i)
+                line = lstdout[i]
                 linel = line.split(' ')
                 while is_negative(linel):
                     A = generate_array(len(linel), random.randint(-500, 0),
