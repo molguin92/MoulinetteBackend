@@ -14,6 +14,7 @@ if __name__ == '__main__':
         for test in tests:
             test.stdin = test.stdin.replace(',', '')
             test.stdout = get_output(test.stdin)
+            test.timeout = 180
             db.session.add(test)
 
         db.session.add(item)
