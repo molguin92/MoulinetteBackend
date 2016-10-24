@@ -10,7 +10,7 @@ from moulinette.homework.models import *
 def generate_array(length, min_val, max_val):
     result = []
     for i in range(length):
-        result.append(random.randint(min_val, max_val))
+        result.append(randint(min_val, max_val))
     return result
 
 
