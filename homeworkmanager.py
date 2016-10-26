@@ -4,6 +4,7 @@ import click
 
 from moulinette import hwserializer, itemserializer, testserializer
 from moulinette.homework.models import *
+from moulinette.stats_and_logs.models import RequestLog
 
 
 def startup():
@@ -31,7 +32,7 @@ def startup():
     elif value == 4:
         deactivate_hw()
     elif value == 5:
-        pass
+        activate_hw()
     elif value == 6:
         delete_hw()
     elif value == 7:
@@ -51,6 +52,18 @@ def fix_tests_timeout():
             test.timeout = 10
             db.session.add(test)
             db.session.commit()
+
+
+def activate_hw():
+    id = click.prompt('ID of the homework to activate', type=str)
+    realid = hwserializer.loads(id)
+    hw = Homework.query.get(realid)
+    if hw:
+        hw.activate()
+        db.session.commit()
+        click.echo('Activated homework: ' + hwserializer.dumps(hw.id))
+    else:
+        click.echo('No such homework: ' + id)
 
 
 def create_hw():
@@ -186,6 +199,11 @@ def delete_hw():
 
         for item in hw.items:
             for test in item.tests:
+                subs = RequestLog.query.filter(RequestLog.test_id ==
+                                               test.id).all()
+                for sub in subs:
+                    db.session.delete(sub)
+                    
                 db.session.delete(test)
 
             db.session.delete(item)
