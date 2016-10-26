@@ -22,5 +22,5 @@ if __name__ == '__main__':
         serialid = hwserializer.dumps(homework.id)
         print('ID: ' + serialid)
         print('Name: ' + homework.name)
-        print('Count: ' + get_submissions_hw(homework.id))
+        print('Count: ' + str(get_submissions_hw(homework.id)))
         print()
