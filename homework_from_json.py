@@ -10,15 +10,18 @@ def main():
         hw = json.loads(infile.read())
 
         dbhw = Homework(hw['name'], hw['description'])
+        db.session.add(dbhw)
+        db.session.commit()
+
         for item in hw['items']:
             dbitem = dbhw.add_item(item['name'], item['description'])
+            db.session.add(dbitem)
+            db.session.commit()
             for test in item['tests']:
                 dbtest = dbitem.add_test(test['description'], test['input'],
                                          test['output'])
                 db.session.add(dbtest)
-            db.session.add(dbitem)
-        db.session.add(dbhw)
-        db.session.commit()
+                db.session.commit()
 
     return hwserializer.dumps(dbhw.id)
 
