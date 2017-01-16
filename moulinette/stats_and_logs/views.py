@@ -1,30 +1,48 @@
 from datetime import timedelta
 
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 
 from moulinette import clientserializer, testserializer
 from moulinette.stats_and_logs.models import *
 
 
 class LogResource(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument('summary', type=bool, default=False,
+                                 required=False)
+
     def get(self):
-        startdate = datetime.today().date() - timedelta(days=7)
-        print(startdate)
-        logs = RequestLog.query.filter(
-            RequestLog.created > startdate
-        ).all()
-        result = []
+        args = self.parser.parse_args()
+        if args.get('summary'):
+            logs = RequestLog.query.all()
+            result = {}
 
-        for log in logs:
-            result.append(
-                {
-                    "client_id": clientserializer.dumps(log.client_id),
-                    "test_id": testserializer.dumps(log.test_id),
-                    "result": log.result,
-                    "error": log.error,
-                    "timestamp": log.created.isoformat()
-                }
-            )
+            for log in logs:
+                date = str(log.created.date())
+                if result.get(date):
+                    result[date] += 1
+                else:
+                    result[date] = 1
 
-        print(startdate.isoformat())
-        return {"results": result, "startdate": startdate.isoformat()}
+            return result
+
+        else:
+            startdate = datetime.today().date() - timedelta(days=7)
+            logs = RequestLog.query.filter(
+                RequestLog.created > startdate
+            ).all()
+            result = []
+
+            for log in logs:
+                result.append(
+                    {
+                        "client_id": clientserializer.dumps(log.client_id),
+                        "test_id": testserializer.dumps(log.test_id),
+                        "result": log.result,
+                        "error": log.error,
+                        "timestamp": log.created.isoformat()
+                    }
+                )
+
+            return {"results": result, "startdate": startdate.isoformat()}
