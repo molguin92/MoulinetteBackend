@@ -16,15 +16,30 @@ class LogResource(Resource):
     def get(self):
         args = self.parser.parse_args()
         if args.get('summary'):
-            logs = RequestLog.query.order_by(RequestLog.created)
+            logs = RequestLog.query.order_by(RequestLog.created).all()
+
+            if len(logs) < 1:
+                return {}
+
             result = OrderedDict()
+            prev_date = logs[0].created.date()
 
             for log in logs:
-                date = str(log.created.date())
-                if result.get(date):
-                    result[date] += 1
+                date = log.created.date()
+
+                if date != prev_date:
+                    new_date = date + timedelta(days=1)
+                    while new_date != date:
+                        result[str(new_date)] = 0
+                        new_date = date + timedelta(days=1)
+
+                sdate = str(date)
+                if result.get(sdate):
+                    result[sdate] += 1
                 else:
-                    result[date] = 1
+                    result[sdate] = 1
+
+                prev_date = date
 
             return result
 
