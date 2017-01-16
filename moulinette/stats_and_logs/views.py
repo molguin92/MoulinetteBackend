@@ -22,24 +22,14 @@ class LogResource(Resource):
                 return {}
 
             result = OrderedDict()
-            prev_date = logs[0].created.date()
 
             for log in logs:
                 date = log.created.date()
-
-                if date > prev_date:
-                    new_date = date + timedelta(days=1)
-                    while new_date < date:
-                        result[str(new_date)] = 0
-                        new_date = date + timedelta(days=1)
-
                 sdate = str(date)
                 if result.get(sdate):
                     result[sdate] += 1
                 else:
                     result[sdate] = 1
-
-                prev_date = date
 
             return result
 
