@@ -27,9 +27,9 @@ class LogResource(Resource):
             for log in logs:
                 date = log.created.date()
 
-                if date != prev_date:
+                if date > prev_date:
                     new_date = date + timedelta(days=1)
-                    while new_date != date:
+                    while new_date < date:
                         result[str(new_date)] = 0
                         new_date = date + timedelta(days=1)
 
