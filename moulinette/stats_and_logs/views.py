@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from flask_restful import Resource, reqparse
+from sqlalchemy.util import OrderedDict
 
 from moulinette import clientserializer, testserializer
 from moulinette.stats_and_logs.models import *
@@ -15,8 +16,8 @@ class LogResource(Resource):
     def get(self):
         args = self.parser.parse_args()
         if args.get('summary'):
-            logs = RequestLog.query.all()
-            result = {}
+            logs = RequestLog.query.order_by(RequestLog.created)
+            result = OrderedDict()
 
             for log in logs:
                 date = str(log.created.date())
