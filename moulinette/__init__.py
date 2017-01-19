@@ -20,7 +20,7 @@ app.logger.addHandler(RotatingFileHandler('.moulinette.log',
                                           backupCount=3))
 app.logger.setLevel(logging.INFO)
 
-db = SQLAlchemy(app)
+db = SQLAlchemy(app, use_native_unicode=False)
 api = Api(app)
 
 hwserializer = URLSafeSerializer(app.secret_key, salt="homework-salt")
