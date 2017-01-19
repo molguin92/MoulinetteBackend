@@ -21,6 +21,5 @@ twitter
 gunicorn
 psycopg2
 requests
-cryptography
 click
 itsdangerous
