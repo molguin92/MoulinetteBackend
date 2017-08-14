@@ -112,7 +112,7 @@ class TestResource(Resource):
 
         for test in results:
             
-            print('test': + test)
+            print('test: ' + test)
 
             test = json.loads(test)
             realid = testserializer.loads(test['id'])
