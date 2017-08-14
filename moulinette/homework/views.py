@@ -109,6 +109,7 @@ class TestResource(Resource):
 
         for test in results:
 
+            test = json.loads(test)
             realid = testserializer.loads(test['id'])
             output = test['output']
             testdb = Test.query.get(realid)
