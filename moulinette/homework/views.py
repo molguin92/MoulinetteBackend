@@ -107,8 +107,12 @@ class TestResource(Resource):
             abort(401)
 
         response = {'results': []}
+        
+        print('results: ' + results)
 
         for test in results:
+            
+            print('test': + test)
 
             test = json.loads(test)
             realid = testserializer.loads(test['id'])
