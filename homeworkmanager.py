@@ -103,6 +103,12 @@ def edit_hw():
 
 
 def edit_item():
+    active = Item.query.all()
+    click.echo('Items: (id - name)')
+    for item in active:
+        click.echo(itemserializer.dumps(item.id) + ' - ' + item.name)
+    click.echo('\n')
+    
     id = click.prompt('ID of item to edit: ', type=str)
     item = Item.query.get(itemserializer.loads(id))
 
