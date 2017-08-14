@@ -6,6 +6,7 @@ from moulinette import hwserializer, itemserializer, testserializer, \
 from moulinette.client.models import Client
 from moulinette.homework.models import *
 from moulinette.stats_and_logs.models import *
+import json
 
 
 # This file implements al the views (endpoints) available to the homework
