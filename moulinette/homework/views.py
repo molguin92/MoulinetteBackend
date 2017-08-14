@@ -108,11 +108,11 @@ class TestResource(Resource):
 
         response = {'results': []}
         
-        print('results: ' + results)
+        print('results: ' + str(results))
 
         for test in results:
             
-            print('test: ' + test)
+            print('test: ' + str(test))
 
             test = json.loads(test)
             realid = testserializer.loads(test['id'])
